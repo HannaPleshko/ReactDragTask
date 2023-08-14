@@ -1,27 +1,25 @@
-import React, { useContext, useState, createContext } from "react"
-import { themes } from "../styles/themes"
+import React, { useContext, useState, createContext } from 'react';
+import { themes } from '../styles/themes';
 
-const ThemeContext = createContext()
-const ThemeUpdateContext = createContext()
+const ThemeContext = createContext();
+const ThemeUpdateContext = createContext();
 
-export const ThemeProvider = ({children}) => {
-    const [theme, setTheme] = useState(0)
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(0);
 
-    const currentTheme = themes[theme]
+  const currentTheme = themes[theme];
 
-    return (
-        <ThemeContext.Provider value={currentTheme}>
-            <ThemeUpdateContext.Provider value={setTheme}>
-                {children}
-            </ThemeUpdateContext.Provider>
-        </ThemeContext.Provider>
-    )
-}
+  return (
+    <ThemeContext.Provider value={currentTheme}>
+      <ThemeUpdateContext.Provider value={setTheme}>{children}</ThemeUpdateContext.Provider>
+    </ThemeContext.Provider>
+  );
+};
 
-export const useThemeContext = () =>{
-    return useContext(ThemeContext)
-}
+export const useThemeContext = () => {
+  return useContext(ThemeContext);
+};
 
-export const useThemeUpdateContext = () =>{
-    return useContext(ThemeUpdateContext)
-}
+export const useThemeUpdateContext = () => {
+  return useContext(ThemeUpdateContext);
+};

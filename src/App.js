@@ -1,117 +1,117 @@
+import { useEffect, useRef, useState } from 'react';
+import { SortableContext } from '@dnd-kit/sortable';
+import styled from 'styled-components';
+import { DndContext } from '@dnd-kit/core';
+import uuid from 'react-uuid';
+import gsap from 'gsap';
 
-import { useEffect, useRef, useState } from "react";
-import { SortableContext } from '@dnd-kit/sortable'
-import styled from "styled-components";
-import { DndContext } from '@dnd-kit/core'
-import uuid from "react-uuid";
-import gsap from "gsap";
+import { removeFromLocalStorage, savetoLocalStorage } from './utils/localStorage';
+import { useThemeContext } from './context/themeContext';
+import ListItem from './Components/ListItem';
+import { myTodos } from './storage/todos';
 
-import { removeFromLocalStorage, savetoLocalStorage } from "./utils/localStorage";
-import { useThemeContext } from "./context/themeContext";
-import ListItem from "./Components/ListItem";
-import { myTodos } from "./storage/todos";
+const grid = <i className="fa-solid fa-table-columns"></i>;
+const list = <i className="fa-solid fa-list-check"></i>;
 
 function App() {
-  const theme = useThemeContext()
+  const theme = useThemeContext();
 
-  const todosRef = useRef()
-  const todosCon = useRef()
-  const formRef = useRef()
+  const todosRef = useRef();
+  const todosCon = useRef();
+  const formRef = useRef();
 
-  const [todos, setTodos] = useState(myTodos)
-  const [value, setValue] = useState('')
-  const [toggleGrid, settoggleGrid] = useState(false)
+  const [todos, setTodos] = useState(myTodos);
+  const [value, setValue] = useState('');
+  const [toggleGrid, settoggleGrid] = useState(false);
 
   useEffect(() => {
-    const localTodos = localStorage.getItem('newTodos')
+    const localTodos = localStorage.getItem('newTodos');
     if (localTodos) {
-      setTodos(JSON.parse(localTodos))
+      setTodos(JSON.parse(localTodos));
     }
 
-    const localGrid = localStorage.getItem('gridToggle')
+    const localGrid = localStorage.getItem('gridToggle');
     if (localGrid) {
-      settoggleGrid(JSON.parse(localGrid))
+      settoggleGrid(JSON.parse(localGrid));
     }
-  }, [])
+  }, []);
 
-  const handleChange = (e) => {
-    setValue(e.target.value)
-  }
+  const handleChange = e => {
+    setValue(e.target.value);
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     if (!value || value.length < 3) {
-      alert('Todo must be at least 3 characters long')
-      return
+      alert('Todo must be at least 3 characters long');
+      return;
     }
 
-    const newTodo = [...todos, { id: uuid(), name: value, completed: false }]
-    setTodos(newTodo)
-    savetoLocalStorage(newTodo)
-    setValue('')
-  }
+    const newTodo = [...todos, { id: uuid(), name: value, completed: false }];
+    setTodos(newTodo);
+    savetoLocalStorage(newTodo);
+    setValue('');
+  };
 
-  const removeTodo = (id) => {
-    removeFromLocalStorage(id, todos)
-    const filtered = todos.filter((todo) => {
-      return todo.id !== id
-    })
+  const removeTodo = id => {
+    removeFromLocalStorage(id, todos);
+    const filtered = todos.filter(todo => {
+      return todo.id !== id;
+    });
 
-    setTodos(filtered)
-  }
+    setTodos(filtered);
+  };
 
-  const handleComplete = (id) => {
-    const newTodos = todos.map((todo) => {
+  const gridHandler = () => {
+    settoggleGrid(!toggleGrid);
+    localStorage.setItem('gridToggle', JSON.stringify(!toggleGrid));
+  };
+
+  const handleComplete = id => {
+    const newTodos = todos.map(todo => {
       if (todo.id === id) {
-        todo.completed = !todo.completed
+        todo.completed = !todo.completed;
       }
 
-      return todo
-    })
-    setTodos(newTodos)
-    savetoLocalStorage(newTodos)
-  }
+      return todo;
+    });
+    setTodos(newTodos);
+    savetoLocalStorage(newTodos);
+  };
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event
+  const handleDragEnd = event => {
+    const { active, over } = event;
 
     if (!active.id !== over.id) {
-      setTodos((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
+      setTodos(items => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over.id);
 
-        const newTodos = [...items]
-        newTodos.splice(oldIndex, 1)
-        newTodos.splice(newIndex, 0, items[oldIndex])
+        const newTodos = [...items];
+        newTodos.splice(oldIndex, 1);
+        newTodos.splice(newIndex, 0, items[oldIndex]);
 
-        savetoLocalStorage(newTodos)
+        savetoLocalStorage(newTodos);
 
         return newTodos;
-      })
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1, ease: 'power1.out' } })
+    const tl = gsap.timeline({ defaults: { duration: 1, ease: 'power1.out' } });
 
-    tl.fromTo(todosRef.current,
-      { opacity: 0, x: 800 },
-      { opacity: 1, x: 0, duration: 0.5 })
+    tl.fromTo(todosRef.current, { opacity: 0, x: 800 }, { opacity: 1, x: 0, duration: 0.5 })
 
-      .fromTo(todosCon.current,
-        { opacity: 0, y: 800, scale: 0.5 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5 }, '-0.1')
+      .fromTo(todosCon.current, { opacity: 0, y: 800, scale: 0.5 }, { opacity: 1, y: 0, scale: 1, duration: 0.5 }, '-0.1')
 
-      .fromTo(formRef.current,
-        { opacity: 0, y: -800, scaleX: 0 },
-        { opacity: 1, y: 0, scaleX: 1 }, '-0.3')
-
+      .fromTo(formRef.current, { opacity: 0, y: -800, scaleX: 0 }, { opacity: 1, y: 0, scaleX: 1 }, '-0.3');
   }, []);
 
   return (
     <AppStyled theme={theme} grid={toggleGrid}>
-      <div ref={formRef} className="form" >
+      <div ref={formRef} className="form">
         <h1>Today's Tasks</h1>
         <div className="input-container">
           <input type="text" placeholder="Add a Task" value={value} onChange={handleChange} />
@@ -121,17 +121,20 @@ function App() {
         </div>
       </div>
       <DndContext onDragEnd={handleDragEnd}>
-        <SortableContext items={todos.map((todo) => todo.id)}>
+        <SortableContext items={todos.map(todo => todo.id)}>
           <ul className="todos-con" ref={todosCon}>
             <div className="priority-con">
               <p>Priority</p>
+              <div className="toggle-grid">
+                <button onClick={gridHandler}>{toggleGrid ? grid : list}</button>
+              </div>
               <p>High</p>
             </div>
             <div className="todos" ref={todosRef}>
-              {
-                todos.map((todo) => {
-                  const { id, name, completed } = todo
-                  return <ListItem
+              {todos.map(todo => {
+                const { id, name, completed } = todo;
+                return (
+                  <ListItem
                     key={id}
                     name={name}
                     id={id}
@@ -140,13 +143,11 @@ function App() {
                     grid={toggleGrid}
                     handleComplete={handleComplete}
                   />
-                })
-              }
+                );
+              })}
             </div>
             <div className="low-priority">
-              <p>
-                Low
-              </p>
+              <p>Low</p>
             </div>
           </ul>
         </SortableContext>
@@ -158,29 +159,29 @@ function App() {
 const AppStyled = styled.div`
   min-height: 100vh;
   padding: 5rem 25rem;
-  background-color: ${(props) => props.theme.colorBg3};
-  @media screen and (max-width: 1490px){
+  background-color: ${props => props.theme.colorBg3};
+  @media screen and (max-width: 1490px) {
     padding: 5rem 15rem;
   }
-  @media screen and (max-width: 400px){
+  @media screen and (max-width: 400px) {
     padding: 2rem;
   }
-  .form{
+  .form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color:${(props) => props.theme.colorBg2};
+    background-color: ${props => props.theme.colorBg2};
     border-radius: 1rem;
     margin-bottom: 2rem;
     padding: 2rem 1rem;
-    box-shadow:  ${(props) => props.theme.shadow3};
+    box-shadow: ${props => props.theme.shadow3};
     border: 1px solid ${props => props.theme.colorIcons3};
-    h1{
+    h1 {
       font-size: clamp(1.5rem, 2vw, 2.5rem);
       font-weight: 800;
-      color: ${(props) => props.theme.colorPrimaryGreen}; 
+      color: ${props => props.theme.colorPrimaryGreen};
     }
-    .input-container{
+    .input-container {
       margin: 2rem 0;
       position: relative;
       font-size: clamp(1rem, 2vw, 1.2rem);
@@ -188,89 +189,102 @@ const AppStyled = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
-      @media screen and (max-width: 400px){
+      @media screen and (max-width: 400px) {
         width: 90%;
       }
-      input, button{
+      input,
+      button {
         font-family: inherit;
         font-size: clamp(1rem, 2vw, 1.2rem);
       }
-      input{
+      input {
         background: transparent;
-        border:1px solid ${(props) => props.theme.colorIcons3};
+        border: 1px solid ${props => props.theme.colorIcons3};
         border-radius: 7px;
-        padding: .8rem 1rem;
-        color: ${(props) => props.theme.colorGrey2};
+        padding: 0.8rem 1rem;
+        color: ${props => props.theme.colorGrey2};
         width: 100%;
-        &:focus{
+        &:focus {
           outline: none;
         }
-        &::placeholder{
-          color: ${(props) => props.theme.colorGrey3};
+        &::placeholder {
+          color: ${props => props.theme.colorGrey3};
         }
-        &:active, &:focus{
-          border: 1px solid ${(props) => props.theme.colorIcons};
+        &:active,
+        &:focus {
+          border: 1px solid ${props => props.theme.colorIcons};
         }
       }
-      button{
+      button {
         position: absolute;
         top: 0;
         right: 0;
         cursor: pointer;
         border: none;
-        background: ${(props) => props.theme.colorPrimaryGreen};
+        background: ${props => props.theme.colorPrimaryGreen};
         height: 100%;
         padding: 0 1rem;
         border-top-right-radius: 7px;
         border-bottom-right-radius: 7px;
-        color: ${(props) => props.theme.colorWhite};
-        transition: all .3s ease;
-        &:hover{
-          background: ${(props) => props.theme.colorPrimary2};
+        color: ${props => props.theme.colorWhite};
+        transition: all 0.3s ease;
+        &:hover {
+          background: ${props => props.theme.colorPrimary2};
         }
       }
     }
   }
 
-  .todos-con{
+  .todos-con {
     overflow: hidden;
-    background: ${(props) => props.theme.colorBg2};
+    background: ${props => props.theme.colorBg2};
     padding: 5rem;
     border-radius: 1rem;
-    box-shadow: ${(props) => props.theme.shadow3};
+    box-shadow: ${props => props.theme.shadow3};
     border: 1px solid ${props => props.theme.colorIcons3};
-    @media screen and (max-width: 400px){
+    @media screen and (max-width: 400px) {
       padding: 1rem;
     }
-    .todos{
-      display: ${props => props.grid ? 'grid' : ''};
+    .todos {
+      display: ${props => (props.grid ? 'grid' : '')};
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
       grid-column-gap: 1rem;
-      grid-row-gap: ${props => props.grid ? '1rem' : ''};
+      grid-row-gap: ${props => (props.grid ? '1rem' : '')};
     }
-    .priority-con{
+    .priority-con {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
-      p{
+      p {
         font-size: clamp(1rem, 2vw, 1.2rem);
-        color: ${(props) => props.theme.colorGrey2};
-        &:last-child{
-          color: ${(props) => props.theme.colorDanger};
+        color: ${props => props.theme.colorGrey2};
+        &:last-child {
+          color: ${props => props.theme.colorDanger};
+        }
+      }
+      .toggle-grid {
+        button {
+          padding: 0.5rem 1rem;
+          border-radius: 7px;
+          background: ${props => props.theme.buttonGradient11};
+          border: 1px solid ${props => props.theme.colorIcons3};
+          cursor: pointer;
+          font-size: clamp(1rem, 2vw, 1.6rem);
+          color: ${props => props.theme.colorGrey1};
+          transition: all 0.3s ease-in-out;
         }
       }
     }
 
-    .low-priority{
+    .low-priority {
       margin-top: 2rem;
       display: flex;
       justify-content: flex-end;
-
-      p{
+      p {
         font-size: clamp(1rem, 2vw, 1.2rem);
         background-clip: text;
-        background: ${(props) => props.theme.colorPrimaryGreenGrad};
+        background: ${props => props.theme.colorPrimaryGreenGrad};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
