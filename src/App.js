@@ -43,6 +43,7 @@ function App() {
 
     if (!value || value.length < 3) {
       alert('Todo must be at least 3 characters long')
+      return
     }
 
     const newTodo = [...todos, { id: uuid(), name: value, completed: false }]
@@ -110,7 +111,7 @@ function App() {
 
   return (
     <AppStyled theme={theme} grid={toggleGrid}>
-      <div ref={formRef} action="" className="form" >
+      <div ref={formRef} className="form" >
         <h1>Today's Tasks</h1>
         <div className="input-container">
           <input type="text" placeholder="Add a Task" value={value} onChange={handleChange} />
