@@ -81,7 +81,7 @@ function ListItem({ name, id, completed, handleComplete, removeTodo, grid }) {
       theme={theme}
       grid={grid}
       completed={completed}
-      randColor={randomColorMemo}
+      randcolor={randomColorMemo}
       style={style}
       {...attributes}
       {...listeners}
@@ -101,7 +101,7 @@ const ListItemStyled = styled.div`
   background: ${props => props.theme.colorBg2};
   position: relative;
   li {
-    background: ${props => props.randColor};
+    background: ${props => props.randcolor};
     padding: 1rem 2rem;
     border-radius: 5px;
     margin-bottom: ${props => (props.grid ? '0' : '1rem')};

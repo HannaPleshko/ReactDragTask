@@ -22,7 +22,7 @@ function App() {
 
   const [todos, setTodos] = useState(myTodos);
   const [value, setValue] = useState('');
-  const [toggleGrid, settoggleGrid] = useState(false);
+  const [toggleGrid, settoggleGrid] = useState(0);
 
   useEffect(() => {
     const localTodos = localStorage.getItem('newTodos');
@@ -64,14 +64,14 @@ function App() {
   };
 
   const gridHandler = () => {
-    settoggleGrid(!toggleGrid);
-    localStorage.setItem('gridToggle', JSON.stringify(!toggleGrid));
+    settoggleGrid(+!toggleGrid);
+    localStorage.setItem('gridToggle', JSON.stringify(+!toggleGrid));
   };
 
   const handleComplete = id => {
     const newTodos = todos.map(todo => {
       if (todo.id === id) {
-        todo.completed = !todo.completed;
+        todo.completed = +!todo.completed;
       }
 
       return todo;
@@ -103,23 +103,21 @@ function App() {
     const tl = gsap.timeline({ defaults: { duration: 1, ease: 'power1.out' } });
 
     tl.fromTo(todosRef.current, { opacity: 0, x: 800 }, { opacity: 1, x: 0, duration: 0.5 })
-
       .fromTo(todosCon.current, { opacity: 0, y: 800, scale: 0.5 }, { opacity: 1, y: 0, scale: 1, duration: 0.5 }, '-0.1')
-
       .fromTo(formRef.current, { opacity: 0, y: -800, scaleX: 0 }, { opacity: 1, y: 0, scaleX: 1 }, '-0.3');
   }, []);
 
   return (
     <AppStyled theme={theme} grid={toggleGrid}>
-      <div ref={formRef} className="form">
+      <form ref={formRef} onSubmit={handleSubmit} className="form">
         <h1>Today's Tasks</h1>
         <div className="input-container">
           <input type="text" placeholder="Add a Task" value={value} onChange={handleChange} />
           <div className="submit-con">
-            <button onClick={handleSubmit}>+ Add Todo</button>
+            <button>+ Add Todo</button>
           </div>
         </div>
-      </div>
+      </form>
       <DndContext onDragEnd={handleDragEnd}>
         <SortableContext items={todos.map(todo => todo.id)}>
           <ul className="todos-con" ref={todosCon}>

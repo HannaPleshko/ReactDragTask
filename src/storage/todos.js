@@ -4,11 +4,11 @@ export const myTodos = [
   {
     id: uuid(),
     name: 'Go to the shops',
-    completed: false,
+    completed: 0,
   },
   {
     id: uuid(),
     name: 'Go to the train',
-    completed: false,
+    completed: 0,
   },
 ];
