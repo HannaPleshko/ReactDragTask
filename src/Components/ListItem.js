@@ -42,9 +42,9 @@ function ListItem({ name, id, completed, handleComplete, removeTodo, grid }) {
     return randomColor;
   };
 
-  const randomColorMemo = React.useMemo(() => {
+  const randomColorMemo = () => {
     return randomColor();
-  }, []);
+  };
 
   const animateAndDelete = () => {
     gsap.to(todoRef.current, {
